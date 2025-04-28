@@ -87,6 +87,7 @@ output/
 runs/
 experiments/
 results/
+data/
 
 # VSCode
 .vscode/

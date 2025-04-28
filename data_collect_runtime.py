@@ -58,7 +58,7 @@ class DataCollectRuntime(Runtime):
     combined = np.column_stack((state_list, action_list)).astype(np.float32)
     return combined, state_list[0].shape, action_list[0].shape
 
-  def generate_filename(self, directory: str, data: np.ndarray) -> str:
+  def generate_filename(self, behavior_name:str, directory: str, data: np.ndarray) -> str:
     # Get the number of existing files in the directory
     existing_files = [f for f in os.listdir(directory) if f.startswith("idm_data_")]
     i = len(existing_files)  # This is the ith file
@@ -70,6 +70,6 @@ class DataCollectRuntime(Runtime):
     num_data_points = data.shape[0]
     
     # Create the filename
-    filename = f"idm_data_{i}_{timestamp}_{num_data_points}.npy"
+    filename = f"{behavior_name}_data_{i}_{timestamp}_{num_data_points}.npy"
     
     return filename

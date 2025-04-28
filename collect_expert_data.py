@@ -13,6 +13,7 @@ except:
 
 import datetime
 import os
+import sys
 import time
 from bark.runtime.commons.parameters import ParameterServer
 from bark.runtime.viewer.buffered_mp_viewer import BufferedMPViewer
@@ -31,11 +32,13 @@ import numpy as np
 from data_collect_runtime import DataCollectRuntime
 
 # hyperparams
-NUM_SCENARIOS = 100
-STEPS_PER_SCENARIO = 100
-
-# parameters
-param_server = ParameterServer()
+NUM_SCENARIOS = 80
+STEPS_PER_SCENARIO = 150
+BEHAVIORS = {
+  "idm": BehaviorIDMClassic,
+  "idm_lane": BehaviorIDMLaneTracking,
+  "mobil": BehaviorMobilRuleBased,
+}
 
 # scenario
 class CustomLaneCorridorConfig(LaneCorridorConfig):
@@ -50,6 +53,9 @@ class CustomLaneCorridorConfig(LaneCorridorConfig):
     lane_corr = self._road_corridor.lane_corridors[0]
     return GoalDefinitionPolygon(lane_corr.polygon)
 
+# parameters
+param_server = ParameterServer()
+
 param_server["BehaviorIDMClassic"]["BrakeForLaneEnd"] = True
 param_server["BehaviorIDMClassic"]["BrakeForLaneEndEnabledDistance"] = 60.0
 param_server["BehaviorIDMClassic"]["BrakeForLaneEndDistanceOffset"] = 30.0
@@ -63,6 +69,18 @@ param_server["World"]["LateralDifferenceThreshold"] = 0.8
 
 SetVerboseLevel(0)
 
+ego_behavior = BehaviorIDMClassic
+behavior_name = "idm"
+
+# Check if user passed in an argument
+if len(sys.argv) > 1:
+    behavior_name = sys.argv[1].lower()
+    if behavior_name in BEHAVIORS:
+        ego_behavior = BEHAVIORS[behavior_name]
+        print(f"Using behavior: {behavior_name}")
+    else:
+        print(f"Unknown behavior '{behavior_name}', defaulting to IDM.")
+
 # configure both lanes of the highway. the right lane has one controlled agent
 left_lane = CustomLaneCorridorConfig(params=param_server,
                                      lane_corridor_id=0,
@@ -74,13 +92,13 @@ right_lane = CustomLaneCorridorConfig(params=param_server,
                                       lane_corridor_id=1,
                                       road_ids=[0, 1],
                                       controlled_ids=True,
-                                      behavior_model=BehaviorMobilRuleBased(param_server),
+                                      behavior_model=ego_behavior(param_server),
                                       s_min=5.,
                                       s_max=20.)
 
 scenarios = \
   ConfigWithEase(num_scenarios=NUM_SCENARIOS,
-                 map_file_name=Data.xodr_data("DR_DEU_Merging_MT_v01_shifted"),
+                 map_file_name=Data.xodr_data("DR_DEU_Merging_MT_v01_centered"),
                  random_seed=0,
                  params=param_server,
                  lane_corridor_configs=[left_lane, right_lane])
@@ -115,7 +133,7 @@ sa_pairs = np.concatenate(sa_pair_arrays, axis=0)
 print("Obtained state-action pairs:", sa_pairs)
 print("Shape:", sa_pairs.shape, "with state shape", state_shape, "and action shape", action_shape)
 directory = "data"
-filename = env.generate_filename(directory, sa_pairs)
+filename = env.generate_filename(behavior_name=behavior_name, directory=directory, data=sa_pairs)
 filepath = os.path.join(directory, filename)
 # Save the array to the .npy file
 np.save(filepath, sa_pairs)
