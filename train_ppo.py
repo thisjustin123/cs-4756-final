@@ -49,9 +49,10 @@ if __name__ == "__main__":
   if warm_policy is not None:
     ppo_trainer.policy.load_state_dict(warm_policy.state_dict())
 
-  ppo_trainer.learn(total_timesteps=1000)
+  ppo_trainer.learn(total_timesteps=100000)
 
-  filename = generate_filename(directory="models", type=f"sac")
+  filename = generate_filename(directory="models", type=f"ppo")
   ppo_trainer.save(filename)
+  print(f"Policy saved to {filename}")
 
   
