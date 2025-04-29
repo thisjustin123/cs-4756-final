@@ -52,7 +52,10 @@ class DataCollectRuntime(Runtime):
     action_list = []
     for w in self._world_history[1:]:
         eval_agent = w.GetAgent(self._scenario._eval_agent_ids[0])
-        action_list.append(eval_agent.behavior_model.GetLastAction())
+        action = eval_agent.behavior_model.GetLastAction()
+        if type(action) == float:
+            action = np.array([action, 0])
+        action_list.append(action)
 
     combined = np.column_stack((state_list, action_list)).astype(np.float32)
     return combined, state_list[0].shape, action_list[0].shape
