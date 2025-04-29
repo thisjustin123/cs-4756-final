@@ -30,7 +30,7 @@ class DataCollectRuntime(Runtime):
     self.observed_states = []
 
   def observe(self):
-    observed_world = ObservedWorld(self._world, 0)
+    observed_world = ObservedWorld(self._world, 0) # type: ignore
     return self.observer.Observe(observed_world)
   
   def step(self):

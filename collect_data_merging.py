@@ -113,10 +113,11 @@ sim_real_time_factor = param_server["simulation"]["real_time_factor",
                                                   "execution in real-time or faster",
                                                   1.]
 
+render = True if len(sys.argv) > 2 and sys.argv[2] == "--vis" else False
 env = DataCollectRuntime(step_time=sim_step_time,
               viewer=viewer,
               scenario_generator=scenarios,
-              render=True,
+              render=render,
               maintain_world_history=True)
 
 # Run the scenarios

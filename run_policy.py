@@ -1,3 +1,4 @@
+import os
 import sys
 
 import gym
@@ -43,13 +44,24 @@ if __name__ == "__main__":
 
   env = gym.make("merging-v0")
   rewards = []  
-  for arg in sys.argv[1:]:
+
+  # If given a directory, run all `.zip` policies in the immediate directory.
+  if len(sys.argv) == 2 and os.path.isdir(sys.argv[1]):
+    policies = [f for f in os.listdir(sys.argv[1]) if f.endswith(".zip")]
+    # Add the directory to the policies
+    policies = [os.path.join(sys.argv[1], policy) for policy in policies]
+  else:
+    # Add each policy individually to run
+    policies = sys.argv[1:]
+
+  # Run all policies.
+  for arg in policies:
     print(f"Running policy {arg}")
     policy = get_policy(arg)
     
     reward = run_policy(policy, env)
     rewards.append(reward)
-  
+    
   # Plot and display
   plt.plot(rewards)
   plt.show()
