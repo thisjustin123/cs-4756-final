@@ -9,7 +9,7 @@ from gym.spaces import Box
 from load_policy import generate_filename, get_policy
 from bark_ml.commons.py_spaces import BoundedContinuous
 
-from stable_baselines3 import SAC
+from stable_baselines3 import PPO
 from stable_baselines3.common.policies import ActorCriticPolicy
 import bark_ml.environments.gym
 from imitation.policies import base
@@ -38,19 +38,24 @@ if __name__ == "__main__":
 
   env.action_space = action_space
   
+  # Match BC's architecture: 2 hidden layers, each with 32 units
+  policy_kwargs = dict(net_arch=[dict(pi=[32, 32], vf=[32, 32])])
   # Train
   print(warm_policy.__class__)
-  sac_trainer = SAC(
+  ppo_trainer = PPO(
     policy="MlpPolicy",
+    policy_kwargs=policy_kwargs,
     env=env,
     verbose=1,
   )
 
-  sac_trainer.actor.load_state_dict(warm_policy.state_dict())
+  if warm_policy is not None:
+    print(f"\n\n{warm_policy.state_dict()}\n\n")
+    ppo_trainer.policy.load_state_dict(warm_policy.state_dict())
 
-  sac_trainer.learn(total_timesteps=1000)
+  ppo_trainer.learn(total_timesteps=1000)
 
   filename = generate_filename(directory="models", type=f"sac")
-  sac_trainer.save(filename)
+  ppo_trainer.save(filename)
 
   

@@ -2,6 +2,7 @@ import datetime
 import os
 from stable_baselines3.common.policies import ActorCriticPolicy, BaseModel, BasePolicy
 from stable_baselines3.sac.policies import MlpPolicy
+from imitation.policies import base
 import sys
 
 def get_policy(filename: str) -> BaseModel:
@@ -9,7 +10,7 @@ def get_policy(filename: str) -> BaseModel:
   Returns the policy loaded from the given filename
   """
   # Get filename argument
-  policy = MlpPolicy.load(filename)
+  policy = ActorCriticPolicy.load(filename)
   return policy
 
 def generate_filename(directory: str, type:str="policy") -> str:
