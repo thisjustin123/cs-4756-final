@@ -38,10 +38,7 @@ if __name__ == "__main__":
 
   env.action_space = action_space
   
-  # Match BC's architecture: 2 hidden layers, each with 32 units
-  policy_kwargs = dict(net_arch=[dict(pi=[32, 32], vf=[32, 32])])
-  # Train
-  print(warm_policy.__class__)
+  policy_kwargs = dict(net_arch=[32,32])
   ppo_trainer = PPO(
     policy="MlpPolicy",
     policy_kwargs=policy_kwargs,
@@ -50,7 +47,6 @@ if __name__ == "__main__":
   )
 
   if warm_policy is not None:
-    print(f"\n\n{warm_policy.state_dict()}\n\n")
     ppo_trainer.policy.load_state_dict(warm_policy.state_dict())
 
   ppo_trainer.learn(total_timesteps=1000)
