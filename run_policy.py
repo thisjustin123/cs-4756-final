@@ -7,7 +7,7 @@ from load_policy import get_policy
 from stable_baselines3.common.policies import BaseModel
 import bark_ml.environments.gym
 
-MAX_RUNS = 100
+MAX_RUNS = 1000
 MAX_ITERS = 20000
 
 def run_policy(policy: BaseModel, env: gym.Env):
