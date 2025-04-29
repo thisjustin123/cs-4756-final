@@ -12,7 +12,7 @@ With this in mind, we can use `Imitation` and other similar structures to learn 
 
 ## Behavior Cloning
 
-We can run the BehaviorIDMClassic on the ego driver to obtain a list of state action pairs that we later use for behavior cloning.
+We can run the BehaviorMobilRuleBased on the ego driver to obtain a list of state action pairs that we later use for behavior cloning. It performs well; better than BehaviorLaneChangeRuleBased which seems to just cause collisions.
 
 It is important to use the same observer (state representation) and action representation (2-dim), as well as the same environment. These things are all configurable, so it is important to match the same ones.
 

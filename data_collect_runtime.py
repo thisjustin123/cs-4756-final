@@ -32,7 +32,6 @@ class DataCollectRuntime(Runtime):
   def observe(self):
     observed_world = ObservedWorld(self._world, 0)
     return self.observer.Observe(observed_world)
-    
   
   def step(self):
     super().step()
@@ -60,7 +59,7 @@ class DataCollectRuntime(Runtime):
 
   def generate_filename(self, behavior_name:str, directory: str, data: np.ndarray) -> str:
     # Get the number of existing files in the directory
-    existing_files = [f for f in os.listdir(directory) if f.startswith("idm_data_")]
+    existing_files = [f for f in os.listdir(directory)]
     i = len(existing_files)  # This is the ith file
     
     # Get the current date and time, formatted as MMDDHHMM

@@ -12,6 +12,7 @@ import os
 
 from bark_ml.library_wrappers.lib_tf_agents.agents import BehaviorSACAgent
 from bark_ml.library_wrappers.lib_tf_agents.runners import SACRunner
+from stable_baselines3.sac.policies import MlpPolicy
 
 from load_policy import generate_filename
 
@@ -49,8 +50,12 @@ if __name__ == "__main__":
     action_space=action_space,
     expert_data=transitions,
   )
-  bc_trainer.train(n_epochs=1)
 
-  # Save the model
-  filename = generate_filename("policies")
-  bc_trainer.policy.save(filename)
+  save_interval = 2
+  TOTAL_EPOCHS = 10
+
+  for epoch in range(TOTAL_EPOCHS):
+      bc_trainer.train(n_epochs=1)  # Train for 1 epoch
+      if (epoch + 1) % save_interval == 0:
+          filename = generate_filename("policies")
+          bc_trainer.policy.save(filename)

@@ -22,6 +22,7 @@ from bark.runtime.scenario.scenario_generation.config_with_ease import \
   LaneCorridorConfig, ConfigWithEase
 from bark.runtime.runtime import Runtime
 from bark.examples.paths import Data
+from bark_ml.environments.blueprints.merging.merging import MergingLaneCorridorConfig
 
 from bark.core.world.opendrive import *
 from bark.core.world.goal_definition import *
@@ -32,26 +33,14 @@ import numpy as np
 from data_collect_runtime import DataCollectRuntime
 
 # hyperparams
-NUM_SCENARIOS = 80
-STEPS_PER_SCENARIO = 150
+NUM_SCENARIOS = 500
+STEPS_PER_SCENARIO = 200
 BEHAVIORS = {
   "idm": BehaviorIDMClassic,
   "idm_lane": BehaviorIDMLaneTracking,
+  "lane": BehaviorLaneChangeRuleBased,
   "mobil": BehaviorMobilRuleBased,
 }
-
-# scenario
-class CustomLaneCorridorConfig(LaneCorridorConfig):
-  def __init__(self,
-               params=None,
-               **kwargs):
-    super(CustomLaneCorridorConfig, self).__init__(params, **kwargs)
-  
-  def goal(self, world):
-    road_corr = world.map.GetRoadCorridor(
-      self._road_ids, XodrDrivingDirection.forward)
-    lane_corr = self._road_corridor.lane_corridors[0]
-    return GoalDefinitionPolygon(lane_corr.polygon)
 
 # parameters
 param_server = ParameterServer()
@@ -82,19 +71,30 @@ if len(sys.argv) > 1:
         print(f"Unknown behavior '{behavior_name}', defaulting to IDM.")
 
 # configure both lanes of the highway. the right lane has one controlled agent
-left_lane = CustomLaneCorridorConfig(params=param_server,
-                                     lane_corridor_id=0,
-                                     road_ids=[0, 1],
-                                     behavior_model=BehaviorMobilRuleBased(param_server),
-                                     s_min=5.,
-                                     s_max=50.)
-right_lane = CustomLaneCorridorConfig(params=param_server,
-                                      lane_corridor_id=1,
-                                      road_ids=[0, 1],
-                                      controlled_ids=True,
-                                      behavior_model=ego_behavior(param_server),
-                                      s_min=5.,
-                                      s_max=20.)
+left_lane = MergingLaneCorridorConfig(
+      params=param_server,
+      road_ids=[0, 1],
+      ds_min=7.,
+      ds_max=12.,
+      min_vel=9.,
+      max_vel=11.,
+      s_min=5.,
+      s_max=45.,
+      lane_corridor_id=0,
+      controlled_ids=None,
+      behavior_model=BehaviorIDMClassic(param_server))
+right_lane = MergingLaneCorridorConfig(
+  params=param_server,
+  road_ids=[0, 1],
+  lane_corridor_id=1,
+  ds_min=7.,
+  ds_max=12.,
+  s_min=5.,
+  s_max=25.,
+  min_vel=9.,
+  max_vel=11.,
+  controlled_ids=True,
+  behavior_model=ego_behavior(param_server))
 
 scenarios = \
   ConfigWithEase(num_scenarios=NUM_SCENARIOS,
@@ -116,7 +116,7 @@ sim_real_time_factor = param_server["simulation"]["real_time_factor",
 env = DataCollectRuntime(step_time=sim_step_time,
               viewer=viewer,
               scenario_generator=scenarios,
-              render=False,
+              render=True,
               maintain_world_history=True)
 
 # Run the scenarios
@@ -127,6 +127,9 @@ for i in range(NUM_SCENARIOS):
     env.step()
   pairs, state_shape, action_shape = env.get_state_action_pairs()
   sa_pair_arrays.append(pairs)
+
+  if i % 10 == 0:
+    print(f"Finished scenario {i}")
 
 # Save all state-action pairs
 sa_pairs = np.concatenate(sa_pair_arrays, axis=0)
