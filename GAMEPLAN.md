@@ -42,10 +42,10 @@ Another method that might add complexity is to test across more than 1 environme
 > I don't think the INTERACTION dataset will be useful.
 * Don't use INTERACTION Dataset. However, collecting human data seems ass. I think instead we can collect data with some different (complex) behavior model BC, IDM BC, vs. NO bc.
 
->To add complexity to this project I would recommend having many different classes of evaluation metrics that you could hypothesis and test across.
+> To add complexity to this project I would recommend having many different classes of evaluation metrics that you could hypothesis and test across.
 * We should add multiple specific **evaluation metrics**.
 
->Another method that might add complexity is to test across more than 1 environment. 
+> Another method that might add complexity is to test across more than 1 environment. 
 
 * We should test across `highway-v0` and `merging-v0`.
 
@@ -93,3 +93,19 @@ We will run the entire set of metrics above on both:
 expecting better results on `highway-v0` since it overall is a simpler problem to solve that more or less requires just driving in line versus performing a tight merge.
 
 BARK-ML also provides `intersection-v0` but that seems way too difficult to learn for.
+
+# BARK-ML Gym rewrite
+
+I don't want to have to pray that my constructed environment somehow matches up with their environment. As such, I will try to **create a gym environment / bark ML runtime subclass** that allows me to run a behavior as the expert. I don't think it is too difficult...
+
+This requires that I can construct a `BehaviorIDMClassic()` and pass it in. I'm not completely sure if I can. But IF SO, then the procedure is more or less as follows:
+
+1. Construct an expert behavior and pass it in to my wrapper class.
+2. The wrapper class will construct the given gym environment and obtain the observed world at each step.
+3. The wrapper will implement `.step()` by simply using the behavior model's .Plan(...) to evaluate the next action.
+4. States will then be read from the BARK-ML state and actions.
+5. `.step()` will return the state and action pairs.
+
+This way, I do not have to GUESS at which parameters cause what behaviors.
+
+ Also, I can probably then ignore data that causes a crash, since that's not very expert. But I'm not sure the best way to do that. Or if I should.

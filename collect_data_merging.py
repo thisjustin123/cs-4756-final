@@ -30,7 +30,7 @@ from bark.core.models.behavior import *
 from bark.core.commons import SetVerboseLevel
 import numpy as np
 
-from data_collect_runtime import DataCollectRuntime
+from classes_and_examples.data_collect_runtime import DataCollectRuntime
 
 # hyperparams
 NUM_SCENARIOS = 500
