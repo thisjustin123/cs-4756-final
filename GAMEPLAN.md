@@ -108,4 +108,9 @@ This requires that I can construct a `BehaviorIDMClassic()` and pass it in. I'm 
 
 This way, I do not have to GUESS at which parameters cause what behaviors.
 
- Also, I can probably then ignore data that causes a crash, since that's not very expert. But I'm not sure the best way to do that. Or if I should.
+Also, I can probably then ignore data that causes a crash, since that's not very expert. But I'm not sure the best way to do that. Or if I should.
+
+Useful methods:
+
+* `behavior_model.GetLastAction()` -- Returns the last action given by the trajectory of `.Plan(...)`
+* `behavior_model.Plan()` -- Plans a new trajectory on the observed world.
