@@ -11,7 +11,7 @@ import bark_ml.environments.gym
 from typing import List
 
 # Should use MAX_ITERS since trajectories vary significantly in length.
-MAX_ITERS = 1000
+MAX_ITERS = 3000
 MAX_RUNS = MAX_ITERS
 
 def run_policy(policy: BaseModel, env: gym.Env):
@@ -43,7 +43,7 @@ def run_policy(policy: BaseModel, env: gym.Env):
 
       run_reward += reward
       total_reward += reward
-      if done and reward <= -0.9:
+      if info.get("collision", False):
         crashes += 1
       
       total_iters += 1
@@ -78,7 +78,7 @@ def plot_bar(title: str, ylabel: str, labels: List[str], values: List[float], co
   bars = plt.bar(labels, values, color=colors, edgecolor='black', linewidth=1.2, width=1.0)
   for bar, label in zip(bars, labels):
         bar.set_label(label)
-  plt.legend(title="Warm Start Policy")
+  plt.legend(loc='upper left', title="Warm Start Policy", bbox_to_anchor=(1, 0.5))
   plt.ylabel(ylabel)
   plt.title(title)
   plt.xticks(rotation=45) 
