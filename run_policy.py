@@ -8,8 +8,10 @@ from load_policy import get_policy
 from stable_baselines3.common.policies import BaseModel
 import bark_ml.environments.gym
 
+from typing import List
+
 # Should use MAX_ITERS since trajectories vary significantly in length.
-MAX_ITERS = 10000
+MAX_ITERS = 1000
 MAX_RUNS = MAX_ITERS
 
 def run_policy(policy: BaseModel, env: gym.Env):
@@ -51,8 +53,37 @@ def run_policy(policy: BaseModel, env: gym.Env):
     print(f"RUN {r}: ", f"Total reward: {run_reward}", f"Average reward: {run_average_reward}")
     total_average_reward += run_average_reward
 
-  print(f"Final average reward: {total_average_reward/r}, FInal total reward: {total_reward}")
+  print(f"Final average reward: {total_average_reward/r}, Final total reward: {total_reward}")
   return total_average_reward/r, total_reward, (r - crashes)/r
+
+def format_policy_name(policy_name: str):
+  """
+  Returns a nicely formatted version of the policy name.
+  """
+  names = {
+    "idm_lane": "IDM Lane Tracking",
+    "idm": "IDM",
+    "mobil": "MOBIL",
+    "lane": "Lane Change",
+    "cold": "Cold Start",
+  }
+
+  for key in names:
+    if key in policy_name:
+      return names[key]
+
+  return policy_name.replace("_", " ").replace("ppo", "").replace("bc", "").replace(".zip", "")
+
+def plot_bar(title: str, ylabel: str, labels: List[str], values: List[float], colors: List[str]):
+  bars = plt.bar(labels, values, color=colors, edgecolor='black', linewidth=1.2, width=1.0)
+  for bar, label in zip(bars, labels):
+        bar.set_label(label)
+  plt.legend(title="Warm Start Policy")
+  plt.ylabel(ylabel)
+  plt.title(title)
+  plt.xticks(rotation=45) 
+  plt.tight_layout()
+  plt.show()
 
 if __name__ == "__main__":
   if len(sys.argv) < 3:
@@ -85,7 +116,6 @@ if __name__ == "__main__":
     safety_rates.append(safety_rate)
     
   # Plot and display
-  plt.plot(avg_rewards)
-  plt.show()
+  plot_bar(title="Average Reward by PPO Warm Start Method", ylabel="Average Reward", labels=[format_policy_name(p) for p in policies], values=avg_rewards, colors=["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF"])
 
   
