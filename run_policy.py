@@ -8,8 +8,8 @@ from load_policy import get_policy
 from stable_baselines3.common.policies import BaseModel
 import bark_ml.environments.gym
 
-MAX_RUNS = 1000
-MAX_ITERS = 20000
+MAX_RUNS = 500
+MAX_ITERS = 10000
 
 def run_policy(policy: BaseModel, env: gym.Env):
   total_iters = 0
@@ -38,21 +38,22 @@ def run_policy(policy: BaseModel, env: gym.Env):
   return total_average_reward/r
 
 if __name__ == "__main__":
-  if len(sys.argv) < 2:
-    print("Usage: python run_policy.py <policy_file>")
+  if len(sys.argv) < 3:
+    print("Usage: python run_policy.py <env_name> <policy_file>")
     exit(1)
 
-  env = gym.make("merging-v0")
+  env_name = sys.argv[1]
+  env = gym.make(env_name)
   rewards = []  
 
   # If given a directory, run all `.zip` policies in the immediate directory.
-  if len(sys.argv) == 2 and os.path.isdir(sys.argv[1]):
-    policies = [f for f in os.listdir(sys.argv[1]) if f.endswith(".zip")]
+  if len(sys.argv) == 3 and os.path.isdir(sys.argv[2]):
+    policies = [f for f in os.listdir(sys.argv[2]) if f.endswith(".zip")]
     # Add the directory to the policies
-    policies = [os.path.join(sys.argv[1], policy) for policy in policies]
+    policies = [os.path.join(sys.argv[2], policy) for policy in policies]
   else:
     # Add each policy individually to run
-    policies = sys.argv[1:]
+    policies = sys.argv[2:]
 
   # Run all policies.
   for arg in policies:
