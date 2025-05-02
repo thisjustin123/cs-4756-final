@@ -11,10 +11,9 @@ import bark_ml.environments.gym
 from typing import List
 
 # Should use MAX_ITERS since trajectories vary significantly in length.
-MAX_ITERS = 3000
-MAX_RUNS = MAX_ITERS
+DEFAULT_ITERS = 3000
 
-def run_policy(policy: BaseModel, env: gym.Env):
+def run_policy(policy: BaseModel, env: gym.Env, iters: int):
   """
   Runs the given policy on the given environment for MAX_ITERS.
 
@@ -25,18 +24,20 @@ def run_policy(policy: BaseModel, env: gym.Env):
   Returns:
     A tuple. The first element is the average reward over MAX_RUNS, the second element is the total reward. The third is the safety rate.
   """
+  MAX_RUNS = iters
+
   total_iters = 0
   r = 0
   total_average_reward = 0
   total_reward = 0
   crashes = 0
-  while r < MAX_RUNS and total_iters < MAX_ITERS:
+  while r < MAX_RUNS and total_iters < DEFAULT_ITERS:
     obs = env.reset()
     done = False
     run_reward = 0
     r += 1
     i = 0
-    while done is False and total_iters < MAX_ITERS:
+    while done is False and total_iters < DEFAULT_ITERS:
       prediction = policy.predict(obs)
       action = np.array(prediction[0]).astype(np.float64).reshape(-1, 1)
       obs, reward, done, info = env.step(action)
@@ -87,7 +88,7 @@ def plot_bar(title: str, ylabel: str, labels: List[str], values: List[float], co
 
 if __name__ == "__main__":
   if len(sys.argv) < 3:
-    print("Usage: python run_policy.py <env_name> <policy_file>")
+    print("Usage: python run_policy.py <env_name> <policy_file> <optional: iters=XXX>")
     exit(1)
 
   env_name = sys.argv[1]
@@ -97,7 +98,7 @@ if __name__ == "__main__":
   safety_rates = []
 
   # If given a directory, run all `.zip` policies in the immediate directory.
-  if len(sys.argv) == 3 and os.path.isdir(sys.argv[2]):
+  if os.path.isdir(sys.argv[2]):
     policies = [f for f in os.listdir(sys.argv[2]) if f.endswith(".zip")]
     # Add the directory to the policies
     policies = [os.path.join(sys.argv[2], policy) for policy in policies]
@@ -105,12 +106,19 @@ if __name__ == "__main__":
     # Add each policy individually to run
     policies = sys.argv[2:]
 
+  iters = DEFAULT_ITERS
+  for i in range(3, len(sys.argv)):
+    if sys.argv[i].startswith("iters="):
+      iters = int(sys.argv[i].split("=")[1])
+      print("found iters")
+      break    
+
   # Run all policies.
   for arg in policies:
     print(f"Running policy {arg}")
     policy = get_policy(arg)
     
-    avg_reward, total_reward, safety_rate = run_policy(policy, env)
+    avg_reward, total_reward, safety_rate = run_policy(policy, env, iters)
     avg_rewards.append(avg_reward)
     total_rewards.append(total_reward)
     safety_rates.append(safety_rate)
