@@ -94,7 +94,23 @@ expecting better results on `highway-v0` since it overall is a simpler problem t
 
 BARK-ML also provides `intersection-v0` but that seems way too difficult to learn for.
 
-# BARK-ML Gym rewrite
+## Figures
+
+We will have the following figures, PER environment:
+
+* 5-bar graph, one for each evaluation metric (3 graphs total)
+
+## Hypothesis
+
+### `merging-v0`
+
+For merging, we expect the warm start from algorithms that have merging logic built in to outperform the algorithms meant for driving in a single lane in any reward metrics, but to be worse in safety rate since the added merging logic learned may cause additional collisions as opposed to just trying to stay in one lane.
+
+### `highway-v0`
+
+For the highway, we expect merging to cause unnecessary collisions, and as such expect the `idm-lane` BC warm start to significantly outperform all the other algorithms on all metrics. This is because merging is NOT required in the highway scenario, and an algorithm which stays in the same lane will create the steadiest and safest driving behavior to learn from.
+
+# BARK-ML Gym rewrite (DONE) - `data_collect_env.py`
 
 I don't want to have to pray that my constructed environment somehow matches up with their environment. As such, I will try to **create a gym environment / bark ML runtime subclass** that allows me to run a behavior as the expert. I don't think it is too difficult...
 
