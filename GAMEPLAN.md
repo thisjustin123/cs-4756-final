@@ -64,17 +64,19 @@ We will collect data from the following policies for warm start:
 
 ## Evaluation Metrics
 
+We run each policy for 10,000 timesteps (resetting whenever a trajectory fails) in order to evaluate / gather the following metrics. This is because our trajectories vary significantly in length, for a very poor policy may repeatedly crash immediately whereas a good policy may take many iterations to crash, or the scene may simply terminate in time.
+
 ### Total Reward
 
 The Total Reward is the sum of all timesteps' rewards across all trajectories. We use this as a simple evaluation metric to see which policy accumulates the most rewards across all timesteps. 
 
-However, this may unfairly bias a car that crashes immediately (-1) every step rather than one that tries a bit, gets lightly punished with negative rewards, then crashes.
+However, this may unfairly bias a car that crashes immediately (-1) every step rather than one that tries a bit, gets lightly punished with negative rewards, then crashes. As such, we present our next metric...
 
 ### Average Reward (AAR)
 
 The Average reward of a trajectory is sum of the rewards of each timestep, divided by the number of timesteps of that run.
 
-The Average Reward METRIC is the Average of the Average Rewards, averaged across the total number of timesteps / rewards. In other words, it is the average reward across all trajectories.
+The Average Reward METRIC is the Average of the Average Rewards, averaged across the total number of runs. In other words, it is the average of the average rewards across each trajectory.
 
 We use this as a metric since the total number of timesteps itself serves as a metric for autonomous driving success, given that we observe that the driver almost always crashes (to get a `-1` reward).
 

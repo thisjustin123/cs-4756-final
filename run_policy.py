@@ -8,34 +8,51 @@ from load_policy import get_policy
 from stable_baselines3.common.policies import BaseModel
 import bark_ml.environments.gym
 
-MAX_RUNS = 500
+# Should use MAX_ITERS since trajectories vary significantly in length.
 MAX_ITERS = 10000
+MAX_RUNS = MAX_ITERS
 
 def run_policy(policy: BaseModel, env: gym.Env):
+  """
+  Runs the given policy on the given environment for MAX_ITERS.
+
+  Args:
+    policy: The policy to run.
+    env: The environment to run the policy on.
+
+  Returns:
+    A tuple. The first element is the average reward over MAX_RUNS, the second element is the total reward. The third is the safety rate.
+  """
   total_iters = 0
   r = 0
   total_average_reward = 0
+  total_reward = 0
+  crashes = 0
   while r < MAX_RUNS and total_iters < MAX_ITERS:
     obs = env.reset()
     done = False
-    total_reward = 0
+    run_reward = 0
     r += 1
     i = 0
     while done is False and total_iters < MAX_ITERS:
       prediction = policy.predict(obs)
       action = np.array(prediction[0]).astype(np.float64).reshape(-1, 1)
       obs, reward, done, info = env.step(action)
+
+      run_reward += reward
       total_reward += reward
+      if done and reward <= -1:
+        crashes += 1
+      
       total_iters += 1
       i += 1
 
-    average_reward = total_reward/i
-    print(f"RUN {r}: ", f"Total reward: {total_reward}", f"Average reward: {average_reward}")
-    total_average_reward += average_reward
-    
+    run_average_reward = run_reward/i
+    print(f"RUN {r}: ", f"Total reward: {run_reward}", f"Average reward: {run_average_reward}")
+    total_average_reward += run_average_reward
 
-  print(f"Final average reward: {total_average_reward/r}")
-  return total_average_reward/r
+  print(f"Final average reward: {total_average_reward/r}, FInal total reward: {total_reward}")
+  return total_average_reward/r, total_reward, (r - crashes)/r
 
 if __name__ == "__main__":
   if len(sys.argv) < 3:
@@ -44,7 +61,9 @@ if __name__ == "__main__":
 
   env_name = sys.argv[1]
   env = gym.make(env_name)
-  rewards = []  
+  avg_rewards = []  
+  total_rewards = []
+  safety_rates = []
 
   # If given a directory, run all `.zip` policies in the immediate directory.
   if len(sys.argv) == 3 and os.path.isdir(sys.argv[2]):
@@ -60,11 +79,13 @@ if __name__ == "__main__":
     print(f"Running policy {arg}")
     policy = get_policy(arg)
     
-    reward = run_policy(policy, env)
-    rewards.append(reward)
+    avg_reward, total_reward, safety_rate = run_policy(policy, env)
+    avg_rewards.append(avg_reward)
+    total_rewards.append(total_reward)
+    safety_rates.append(safety_rate)
     
   # Plot and display
-  plt.plot(rewards)
+  plt.plot(avg_rewards)
   plt.show()
 
   

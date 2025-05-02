@@ -89,6 +89,7 @@ experiments/
 results/
 data/
 policies/
+figs/
 
 # VSCode
 .vscode/
