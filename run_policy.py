@@ -43,7 +43,7 @@ def run_policy(policy: BaseModel, env: gym.Env):
 
       run_reward += reward
       total_reward += reward
-      if done and reward <= -1:
+      if done and reward <= -0.9:
         crashes += 1
       
       total_iters += 1
@@ -116,6 +116,14 @@ if __name__ == "__main__":
     safety_rates.append(safety_rate)
     
   # Plot and display
-  plot_bar(title="Average Reward by PPO Warm Start Method", ylabel="Average Reward", labels=[format_policy_name(p) for p in policies], values=avg_rewards, colors=["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF"])
+  colors=["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF"]
+  labels=[format_policy_name(p) for p in policies]
+  plot_bar(title="Average Reward by PPO Warm Start Method", ylabel="Average Reward", labels=labels, values=avg_rewards, colors=colors)
+
+  plot_bar(title="Total Reward by PPO Warm Start Method", ylabel="Total Reward", labels=labels, values=total_rewards, colors=colors)
+
+  plot_bar(title="Safety Rate by PPO Warm Start Method", ylabel="Safety Rate", labels=labels, values=safety_rates, colors=colors)
+
+
 
   
