@@ -22,10 +22,10 @@ from bark.core.models.behavior import *
 
 # hyperparams
 BEHAVIORS = {
-  "idm": BehaviorIDMClassic,
-  "idm_lane": BehaviorIDMLaneTracking,
-  "lane": BehaviorLaneChangeRuleBased,
-  "mobil": BehaviorMobilRuleBased,
+  "idm": BehaviorIDMClassic, # type: ignore
+  "idm_lane": BehaviorIDMLaneTracking, # type: ignore
+  "lane": BehaviorLaneChangeRuleBased, # type: ignore
+  "mobil": BehaviorMobilRuleBased, # type: ignore
 }
 
 class GymDataCollectRuntime(SingleAgentRuntime):
