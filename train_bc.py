@@ -16,27 +16,27 @@ from stable_baselines3.sac.policies import MlpPolicy
 
 from load_policy import generate_filename
 
-if __name__ == "__main__":
-  env = gym.make("merging-v0")
+def main(env_name: str, filename: str):
+  print(f"Loading data from {filename}")
+  data = np.load(filename).astype(np.float32)
 
-  # Get filename arg, if it exists
-  if len(sys.argv) >= 2:
-    filename = sys.argv[1]
-    print(f"Loading data from {filename}")
-    data = np.load(filename).astype(np.float32)
-  else:
-    # Load most recent file in "data" directory
-    files = [f for f in os.listdir("data") if f.startswith("idm_data_")]
-    filename = files[-1]
-    print(f"Loading data from {filename}")
-    data = np.load(os.path.join("data", filename)).astype(np.float32)
+  env = gym.make(env_name)
+
+  state_dim = env.observation_space.shape[0]
   
-  states = data[:, :12]  # First 12 columns are the state
-  actions = data[:, 12:]  # Last 2 columns are the action
+  states = data[:, :state_dim]  # First 12 columns are the state
+  actions = data[:, state_dim:]  # Last 2 columns are the action
   infos = np.zeros((data.shape[0], 1))
   transitions = TransitionsMinimal(obs=states, acts=actions, infos=infos)
 
   bounded_space: BoundedContinuous = env.action_space
+
+  obs_space = spaces.Box(
+     low = env.observation_space.low,
+     high = env.observation_space.high,
+     shape = (env.observation_space.shape[0],),
+     dtype = np.float32
+  )
 
   action_space = spaces.Box(
     low = bounded_space.low,
@@ -46,7 +46,7 @@ if __name__ == "__main__":
   )
 
   bc_trainer = bc.BC(
-    observation_space=env.observation_space,
+    observation_space=obs_space,
     action_space=action_space,
     expert_data=transitions,
   )
@@ -59,3 +59,12 @@ if __name__ == "__main__":
       if (epoch + 1) % save_interval == 0:
           filename = generate_filename("policies")
           bc_trainer.policy.save(filename)
+
+if __name__ == "__main__":
+  # Get filename arg, if it exists
+  if len(sys.argv) >= 3:
+    env_name = sys.argv[1]
+    filename = sys.argv[2]
+    
+  main(env_name, filename)
+    
