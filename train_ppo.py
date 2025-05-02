@@ -14,20 +14,19 @@ from stable_baselines3.common.policies import ActorCriticPolicy
 import bark_ml.environments.gym
 from imitation.policies import base
 
+from stable_baselines3.common.policies import ActorCriticPolicy, BaseModel, BasePolicy
 
-if __name__ == "__main__":
-  env = gym.make("merging-v0")
-
-  # Get filename arg, if it exists
-  if len(sys.argv) >= 2:
-    filename = sys.argv[1]
-    print(f"Warm starting policy from {filename}")
-    warm_policy = get_policy(filename)
-  else:
-    print("NOT Warm starting.")
-    warm_policy = None
+def main(warm_policy: BaseModel, env_name: str):
+  env = gym.make(env_name)
 
   bounded_space: BoundedContinuous = env.action_space
+
+  obs_space = Box(
+     low = env.observation_space.low,
+     high = env.observation_space.high,
+     shape = (env.observation_space.shape[0],),
+     dtype = np.float32
+  )
 
   action_space = Box(
     low = bounded_space.low,
@@ -37,6 +36,7 @@ if __name__ == "__main__":
   )
 
   env.action_space = action_space
+  env.observation_space = obs_space
   
   policy_kwargs = dict(net_arch=[32,32])
   ppo_trainer = PPO(
@@ -55,4 +55,14 @@ if __name__ == "__main__":
   ppo_trainer.save(filename)
   print(f"Policy saved to {filename}")
 
-  
+if __name__ == "__main__":
+  # Get filename arg, if it exists
+  if len(sys.argv) >= 3:
+    filename = sys.argv[2]
+    print(f"Warm starting policy from {filename}")
+    warm_policy = get_policy(filename)
+  else:
+    print("NOT Warm starting.")
+    warm_policy = None
+
+  main(warm_policy=warm_policy, env_name=sys.argv[1])
