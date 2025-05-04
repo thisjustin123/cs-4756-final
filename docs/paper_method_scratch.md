@@ -4,7 +4,7 @@ All code for our methodology is available at: [`thisjustin123/cs-4756-final`](ht
 
 For a quick rundown of each script's usage and set of accepted inputs:
 
-* `python collect_data_gym.py <env_name> <behavior_type>` - Runs data collection on the given data collection environment (defined in [`data_collect_env.py`](https://github.com/thisjustin123/cs-4756-final/blob/main/classes_and_examples/data_collect_env.py)) with the given expert behavior type (`"idm"`, `"idm_lane"`, `lane`, or `mobil`). Outputs an `.npy` file with the state action pairs to the `data/` directory.
+* `python collect_data_gym.py <env_name> <behavior_type>` - Runs data collection on the given data collection environment (defined in [`data_collect_env.py`](https://github.com/thisjustin123/cs-4756-final/blob/main/classes/data_collect_env.py)) with the given expert behavior type (`"idm"`, `"idm_lane"`, `lane`, or `mobil`). Outputs an `.npy` file with the state action pairs to the `data/` directory.
 
 * `python train_bc.py <env_name> <data filepath>` - Trains BC policy snapshots on the given environment (`highway-v0` or `merging-v0`) with the given expert data `.npy` file. Outputs 10 `.zip` policy snapshots to the `policies/` directory. 
 
@@ -16,7 +16,7 @@ We use these scripts in our methodology across multiple scripts and code snippet
 
 For each environment:
 
-1) [`collect_data_gym.py`](https://github.com/thisjustin123/cs-4756-final/blob/main/collect_data_gym.py) is run to collect data points (100,000 by default) on a given expert behavior model--either IDM, IDM Lane, Lane Change, or Mobil. As part of our implementation, we added a [`data_collect_env.py`](https://github.com/thisjustin123/cs-4756-final/blob/main/classes_and_examples/data_collect_env.py) that exactly mimics the gym environments `merging-v0` and `highway-v0`, except just using the behavior models for the experts we listed above (instead of taking in an `action` per step).
+1) [`collect_data_gym.py`](https://github.com/thisjustin123/cs-4756-final/blob/main/collect_data_gym.py) is run to collect data points (100,000 by default) on a given expert behavior model--either IDM, IDM Lane, Lane Change, or Mobil. As part of our implementation, we added a [`data_collect_env.py`](https://github.com/thisjustin123/cs-4756-final/blob/main/classes/data_collect_env.py) that exactly mimics the gym environments `merging-v0` and `highway-v0`, except just using the behavior models for the experts we listed above (instead of taking in an `action` per step).
 
 For each expert behavior model (i.e. IDM, IDM Lane, etc.):
 

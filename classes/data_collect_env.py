@@ -127,10 +127,10 @@ class DataCollectHighway(GymDataCollectRuntime, gym.Env):
 
 register(
   id='merging-data-collect',
-  entry_point='classes_and_examples.data_collect_env:DataCollectMerging'
+  entry_point='classes.data_collect_env:DataCollectMerging'
 )
 
 register(
   id='highway-data-collect',
-  entry_point='classes_and_examples.data_collect_env:DataCollectHighway'
+  entry_point='classes.data_collect_env:DataCollectHighway'
 )

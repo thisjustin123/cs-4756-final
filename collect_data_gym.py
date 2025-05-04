@@ -3,7 +3,7 @@ import sys
 import gym
 import numpy as np
 
-from classes_and_examples.data_collect_env import *
+from classes.data_collect_env import *
 
 def generate_filename(behavior_name:str, env_name:str, directory: str, data: np.ndarray) -> str:
     # Get the number of existing files in the directory

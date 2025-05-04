@@ -4,7 +4,7 @@ import sys
 import gym
 import numpy as np
 import matplotlib.pyplot as plt
-from classes_and_examples.load_policy import get_policy
+from classes.load_policy import get_policy
 from stable_baselines3.common.policies import BaseModel
 import bark_ml.environments.gym
 
