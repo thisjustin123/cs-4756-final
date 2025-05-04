@@ -49,11 +49,16 @@ def main(warm_policy: BaseModel, env_name: str):
   if warm_policy is not None:
     ppo_trainer.policy.load_state_dict(warm_policy.state_dict())
 
-  ppo_trainer.learn(total_timesteps=100000)
+  total_steps = 100000
+  steps_per_iteration = 10000
+  num_iterations = total_steps // steps_per_iteration
 
-  filename = generate_filename(directory="models", type=f"ppo")
-  ppo_trainer.save(filename)
-  print(f"Policy saved to {filename}")
+  for i in range(num_iterations):
+      ppo_trainer.learn(total_timesteps=steps_per_iteration)
+      
+      filename = generate_filename(directory="models", type=f"ppo_step{i+1}")
+      ppo_trainer.save(filename)
+      print(f"Policy saved to {filename}")
 
 if __name__ == "__main__":
   # Get filename arg, if it exists

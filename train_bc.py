@@ -51,7 +51,7 @@ def main(env_name: str, filename: str):
     expert_data=transitions,
   )
 
-  save_interval = 2
+  save_interval = 1
   TOTAL_EPOCHS = 10
 
   for epoch in range(TOTAL_EPOCHS):
