@@ -33,3 +33,5 @@ For each expert behavior model (i.e. IDM, IDM Lane, etc.):
 Finally...
 
 6) Once all PPO models are acquired, [`run_policy.py`](https://github.com/thisjustin123/cs-4756-final/blob/main/run_policy.py) is run a final time to generate figures comparing all final PPO policies across IDM, IDM Lane, Lane Change, Mobil, and Cold Start. It creates three figures: one for each evaluation metric (Average Reward, Total Reward, and Safety Rate).
+
+    * Thus, by the end, we will have 6 total figures; 3 per environment; 1 per evaluation metric.
