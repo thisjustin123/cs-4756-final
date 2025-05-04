@@ -14,7 +14,7 @@ from bark_ml.library_wrappers.lib_tf_agents.agents import BehaviorSACAgent
 from bark_ml.library_wrappers.lib_tf_agents.runners import SACRunner
 from stable_baselines3.sac.policies import MlpPolicy
 
-from load_policy import generate_filename
+from classes_and_examples.load_policy import generate_filename
 
 def main(env_name: str, filename: str):
   print(f"Loading data from {filename}")

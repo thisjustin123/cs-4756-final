@@ -6,7 +6,7 @@ import numpy as np
 
 from gym.spaces import Box
 
-from load_policy import generate_filename, get_policy
+from classes_and_examples.load_policy import generate_filename, get_policy
 from bark_ml.commons.py_spaces import BoundedContinuous
 
 from stable_baselines3 import PPO
