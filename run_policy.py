@@ -1,3 +1,4 @@
+import datetime
 import os
 import sys
 
@@ -86,6 +87,9 @@ def plot_bar(title: str, xlabel: str, ylabel: str, labels: List[str], values: Li
   plt.xticks(fontsize=10)
   plt.yticks(fontsize=10)
   plt.tight_layout()
+
+  timestamp = datetime.datetime.now().strftime("%m%d%H%M")
+  plt.savefig("figs/"+timestamp+".png", dpi=300, bbox_inches='tight')
   plt.show()
 
 if __name__ == "__main__":
