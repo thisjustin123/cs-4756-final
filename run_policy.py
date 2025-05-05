@@ -31,13 +31,13 @@ def run_policy(policy: BaseModel, env: gym.Env, iters: int):
   total_average_reward = 0
   total_reward = 0
   crashes = 0
-  while r < MAX_RUNS and total_iters < DEFAULT_ITERS:
+  while r < MAX_RUNS and total_iters < iters:
     obs = env.reset()
     done = False
     run_reward = 0
     r += 1
     i = 0
-    while done is False and total_iters < DEFAULT_ITERS:
+    while done is False and total_iters < iters:
       prediction = policy.predict(obs)
       action = np.array(prediction[0]).astype(np.float64).reshape(-1, 1)
       obs, reward, done, info = env.step(action)
@@ -62,11 +62,11 @@ def format_policy_name(policy_name: str):
   Returns a nicely formatted version of the policy name.
   """
   names = {
-    "idm_lane": "IDM Lane Tracking",
+    "idm_lane": "IDM Lane\nTracking",
     "idm": "IDM",
     "mobil": "MOBIL",
-    "lane": "Lane Change",
-    "cold": "Cold Start",
+    "lane": "Lane\nChange",
+    "cold": "Cold\nStart",
   }
 
   for key in names:
@@ -75,14 +75,16 @@ def format_policy_name(policy_name: str):
 
   return policy_name.replace("_", " ").replace("ppo", "").replace("bc", "").replace(".zip", "")
 
-def plot_bar(title: str, ylabel: str, labels: List[str], values: List[float], colors: List[str]):
-  bars = plt.bar(labels, values, color=colors, edgecolor='black', linewidth=1.2, width=1.0)
+def plot_bar(title: str, xlabel: str, ylabel: str, labels: List[str], values: List[float], colors: List[str]):
+  bars = plt.bar(labels, values, color=colors, edgecolor='black', linewidth=1.2, width=0.7)
   for bar, label in zip(bars, labels):
         bar.set_label(label)
-  plt.legend(loc='upper left', title="Warm Start Policy", bbox_to_anchor=(1, 0.5))
-  plt.ylabel(ylabel)
-  plt.title(title)
-  plt.xticks(rotation=45) 
+  plt.xlabel(xlabel, fontweight='bold', fontsize=12, labelpad=14)
+  plt.ylabel(ylabel, fontweight='bold', fontsize=12, labelpad=10)
+  plt.title(title, fontweight='bold', fontsize=14, pad=14)
+  plt.grid(axis='y', linestyle='--', alpha=0.5)
+  plt.xticks(fontsize=10)
+  plt.yticks(fontsize=10)
   plt.tight_layout()
   plt.show()
 
@@ -126,11 +128,11 @@ if __name__ == "__main__":
   # Plot and display
   colors=["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF"]
   labels=[format_policy_name(p) for p in policies]
-  plot_bar(title="Average Reward by PPO Warm Start Method", ylabel="Average Reward", labels=labels, values=avg_rewards, colors=colors)
+  plot_bar(title=f"Average Reward by PPO Warm Start Method\n({env_name})", xlabel = "Warm Start Policy", ylabel="Average Reward", labels=labels, values=avg_rewards, colors=colors)
 
-  plot_bar(title="Total Reward by PPO Warm Start Method", ylabel="Total Reward", labels=labels, values=total_rewards, colors=colors)
+  plot_bar(title=f"Total Reward by PPO Warm Start Method\n({env_name})", xlabel = "Warm Start Policy", ylabel="Total Reward", labels=labels, values=total_rewards, colors=colors)
 
-  plot_bar(title="Safety Rate by PPO Warm Start Method", ylabel="Safety Rate", labels=labels, values=safety_rates, colors=colors)
+  plot_bar(title=f"Safety Rate by PPO Warm Start Method\n({env_name})", xlabel = "Warm Start Policy", ylabel="Safety Rate", labels=labels, values=safety_rates, colors=colors)
 
 
 
