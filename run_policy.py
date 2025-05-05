@@ -126,7 +126,7 @@ if __name__ == "__main__":
     safety_rates.append(safety_rate)
     
   # Plot and display
-  colors=["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF"]
+  colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"]
   labels=[format_policy_name(p) for p in policies]
   plot_bar(title=f"Average Reward by PPO Warm Start Method\n({env_name})", xlabel = "Warm Start Policy", ylabel="Average Reward", labels=labels, values=avg_rewards, colors=colors)
 
